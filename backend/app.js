@@ -1,0 +1,30 @@
+const express = require('express');
+const dotenv = require('dotenv');
+const connectDB = require('./config/db');
+const path = require('path');
+const otpRoutes = require("./routes/otpRoutes");
+const cors = require('cors'); 
+
+dotenv.config();
+connectDB();
+
+const app = express();
+
+app.use(cors(
+    {
+        origin: '*', 
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        credentials: true,
+    }
+));
+
+app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+app.use("/api/otp", otpRoutes);
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/images', require('./routes/imageRoutes'));
+
+app.get('/', (req, res) => res.send('API Running'));
+
+module.exports = app;

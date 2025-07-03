@@ -1,0 +1,211 @@
+.about-container {
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 50rem 1rem 2rem; /* Increased top padding to avoid navbar overlap */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+/* Hero Section */
+.about-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+.about-content h1 {
+  font-size: 3rem;
+  color: #2d5a27;
+  margin-bottom: 2rem;
+}
+
+.inspiring-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.quote {
+  font-size: 1.1rem;
+  font-style: italic;
+  color: #4a7c59;
+  line-height: 1.6;
+  padding: 1rem;
+  background: rgba(74, 124, 89, 0.1);
+  border-left: 4px solid #4a7c59;
+  border-radius: 0 10px 10px 0;
+}
+
+.about-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.farmer-image {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.farmer-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+/* Product Info Section */
+.product-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4rem 0;
+  gap: 3rem;
+  flex-wrap: wrap;
+}
+
+.product-text {
+  flex: 1;
+  min-width: 300px;
+}
+
+.product-text h2 {
+  font-size: 2.2rem;
+  margin-bottom: 1.5rem;
+  color: #2d5a27;
+}
+
+.green-highlight {
+  color: #4caf50;
+}
+
+.product-text p {
+  font-size: 1.1rem;
+  color: #444;
+  line-height: 1.7;
+  margin-bottom: 1.2rem;
+}
+
+.product-image {
+  flex: 1;
+  text-align: center;
+  min-width: 300px;
+}
+
+.product-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 20px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.product-image img:hover {
+  transform: scale(1.03);
+}
+
+/* Mission Section */
+.mission-section {
+  padding: 4rem 0;
+  text-align: center;
+  background: rgba(74, 124, 89, 0.05);
+  border-radius: 20px;
+  margin: 2rem 0;
+}
+
+.mission-section h2 {
+  font-size: 2.5rem;
+  color: #2d5a27;
+  margin-bottom: 2rem;
+}
+
+.mission-section p {
+  font-size: 1.2rem;
+  color: #666;
+  line-height: 1.8;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Values Section */
+.values-section {
+  padding: 4rem 0;
+  text-align: center;
+}
+
+.values-section h2 {
+  font-size: 2.5rem;
+  color: #2d5a27;
+  margin-bottom: 3rem;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.value-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.value-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.value-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.value-card h3 {
+  color: #2d5a27;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.value-card p {
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .about-hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 2rem;
+  }
+
+  .about-content h1 {
+    font-size: 2rem;
+  }
+
+  .quote {
+    font-size: 1rem;
+  }
+
+  .product-section {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .product-text h2 {
+    font-size: 1.8rem;
+  }
+
+  .product-text p {
+    font-size: 1rem;
+  }
+}

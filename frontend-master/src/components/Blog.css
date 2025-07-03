@@ -1,0 +1,325 @@
+.blog-page {
+  max-width: 880px;
+  margin: auto;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f0fdf4;
+  padding: 1rem;
+}
+
+/* Top Bar */
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #c8e6c9;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2e7d32;
+}
+
+.search-bar {
+  flex: 1;
+  margin: 0 1rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid #c8e6c9;
+  border-radius: 25px;
+  font-size: 1rem;
+  background-color: white;
+}
+
+.top-icons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.create-btn {
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.create-btn:hover {
+  background-color: #1b5e20;
+}
+
+.bell-icon {
+  color: #2e7d32;
+  cursor: pointer;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 1.5rem;
+  margin: 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #ccc;
+}
+
+.tab {
+  font-size: 1rem;
+  color: #555;
+  cursor: pointer;
+  padding: 0.3rem 0;
+  position: relative;
+}
+
+.tab:hover,
+.tab.active {
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.tab.active::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: #2e7d32;
+  bottom: -8px;
+  left: 0;
+}
+
+/* Blog Cards */
+.blog-list {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.blog-entry {
+  display: flex;
+  justify-content: space-between;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 128, 0, 0.08);
+  padding: 1.2rem;
+  gap: 1rem;
+}
+
+.blog-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.blog-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2e7d32;
+  margin-bottom: 0.5rem;
+}
+
+.blog-description {
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 1rem;
+}
+
+.blog-meta {
+  font-size: 0.9rem;
+  color: #777;
+  display: flex;
+  gap: 1rem;
+}
+
+.blog-image-wrapper {
+  flex-shrink: 0;
+}
+
+.blog-image-preview {
+  width: 160px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #eee;
+}
+
+.tabs .tab {
+  font-size: 1rem;
+  color: #555;
+  cursor: pointer;
+  margin-right: 1rem;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.tabs .tab:hover {
+  color: #2e7d32;
+}
+
+.tabs .tab.active {
+  font-weight: bold;
+  color: #2e7d32;
+}
+
+.tabs .tab.active::after {
+  content: "";
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  background: #2e7d32;
+  left: 0;
+  bottom: -5px;
+}
+
+.hover-card {
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.hover-card:hover {
+  box-shadow: 0 4px 30px rgba(0, 128, 0, 0.1);
+  transform: translateY(-4px);
+}
+
+/* Existing CSS remains unchanged, append these new styles */
+
+/* Show less link */
+.show-less {
+  display: none;
+  color: #2e7d32;
+  cursor: pointer;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  display: block;
+  /* Initially hidden, shown on hover */
+}
+
+.hover-card:hover .show-less {
+  display: block;
+}
+
+/* Existing CSS remains unchanged, append these new styles */
+
+/* Editor Page */
+.editor-page {
+  max-width: 800px;
+  margin: auto;
+  font-family: "Georgia", serif;
+  background-color: #fff;
+  padding: 2rem;
+}
+
+.editor-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #ccc;
+}
+
+.nav-links a {
+  margin-left: 1rem;
+  color: #333;
+  text-decoration: none;
+}
+
+.nav-links a:hover {
+  color: #007bff;
+}
+
+.login-btn {
+  background-color: #2e7d32;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  background-color: #1b5e20;
+}
+
+.editor-container {
+  margin-top: 2rem;
+}
+
+.editor-title {
+  font-size: 2rem;
+  font-weight: medium;
+  border: 2px solid rgb(163, 228, 163);
+  outline: none;
+  width: 100%;
+  margin-bottom: 1rem;
+  background-color: white;
+  color: black;
+  font-family: "Georgia", serif;
+}
+
+.editor-content {
+  font-size: 1.2rem;
+  width: 100%;
+  height: 400px;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: "Georgia", serif;
+  line-height: 1.6;
+  background-color: rgb(203, 236, 203);
+  color: black;
+}
+
+.editor-toolbar {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.editor-toolbar button {
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+
+.editor-toolbar button:hover {
+  background: #e0e0e0;
+}
+
+.editor-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.publish-btn {
+  background-color: #2e7d32;
+  color: white;
+  border: 1px solid #ccc;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: "Georgia", serif;
+}
+
+.publish-btn:hover {
+  background-color: #1b5e20;
+}
+
+.cancel-btn {
+  background-color: rgb(211, 75, 75);
+  border: 1px solid #ccc;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: "Georgia", serif;
+}
+
+.cancel-btn:hover {
+  background: rgb(232, 10, 10);
+}
