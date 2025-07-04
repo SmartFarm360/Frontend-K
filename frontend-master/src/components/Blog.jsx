@@ -43,7 +43,7 @@ const Blog = () => {
     return (
       <div className="editor-page">
         <div className="editor-nav">
-          <h1 className="logo">WRITE YOURS....</h1>
+          <h1 className="product-name">WRITE YOURS....</h1>
           {/* <div className="nav-links">
             <a href="#home">Home</a>
             <a href="#about">About Us</a>
@@ -88,7 +88,7 @@ const Blog = () => {
     <div className="blog-page">
       {/* Top Navigation Bar */}
       <div className="top-nav">
-        <h1 className="logo">SmartFarm Feeds</h1>
+        <h1 className="product-name">SmartFarm Feeds</h1>
         <input type="text" className="search-bar" placeholder="Search..." />
         <div className="top-icons">
           <button className="create-btn" onClick={handleCreateClick}>

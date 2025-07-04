@@ -85,25 +85,25 @@ exports.register = async (req, res) => {
                 landDocumentHash: hash
             });
 
-        } else if (role === 'admin') {
-            const { employeeId, adminArea, accessLevel } = req.body;
+        // } else if (role === 'admin') {
+        //     const { employeeId, adminArea, accessLevel } = req.body;
 
-            if (!employeeId || !adminArea || !accessLevel) {
-                return res.status(400).json({ message: 'All admin fields are required.' });
-            }
+        //     if (!employeeId || !adminArea || !accessLevel) {
+        //         return res.status(400).json({ message: 'All admin fields are required.' });
+        //     }
 
-            newUser = await Admin.create({
-                name,
-                email,
-                mobile,
-                password: hashedPassword,
-                role,
-                employeeId,
-                adminArea,
-                accessLevel
-            });
+        //     newUser = await Admin.create({
+        //         name,
+        //         email,
+        //         mobile,
+        //         password: hashedPassword,
+        //         role,
+        //         employeeId,
+        //         adminArea,
+        //         accessLevel
+        //     });
 
-        } else if (role ==="drone controller") {  // ✅ FIXED: use underscore to match frontend
+        } else if (role === "drone_controller") { // FIXED: use space to match frontend
             const { licenseId, baseLocation, availableDrones, flightExperience } = req.body;
 
             if (!licenseId || !baseLocation || availableDrones === undefined || flightExperience === undefined) {

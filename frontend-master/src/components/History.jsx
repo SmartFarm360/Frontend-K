@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { translations } from "../utils/translations";
 import "./History.css";
 
+
 const History = ({ currentLanguage }) => {
   const [historyData, setHistoryData] = useState([]);
   const t = translations?.[currentLanguage] || translations["en"];

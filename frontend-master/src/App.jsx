@@ -18,7 +18,7 @@ import DroneDashboard from "./components/DroneDashboard";
 import History from "./components/History";
 import Language from "./components/Language";
 import Profile from "./components/Profile";
-import Blog from "./components/Blog"; 
+import Blog from "./components/Blog";
 
 import axios from "axios";
 import "./App.css";
@@ -37,6 +37,10 @@ function App() {
     if (role) setUserRole(role);
     if (savedLang) setCurrentLanguage(savedLang);
   }, []);
+
+  useEffect(() => {
+    console.log("Loaded userRole from storage:", userRole);
+  }, [userRole]);
 
   const handleLogin = async (credentials) => {
     try {
@@ -95,12 +99,10 @@ function App() {
 
   const redirectDashboard = () => {
     switch (userRole) {
-      // case "admin":
-      //   return "/AdminDashboard";
-      case "drone_controller":
-        return "/DroneDashboard";
       case "farmer":
         return "/dashboard";
+      case "drone_controller": // CHANGED: use underscore
+        return "/drone-dashboard";
       default:
         return "/login";
     }
@@ -194,15 +196,17 @@ function App() {
                   <Dashboard currentLanguage={currentLanguage} />
                 </MainLayout>
               ) : (
-                <Navigate to="/login" />
+                <div style={{ padding: "2rem", color: "red" }}>
+                  Not authorized for Farmer Dashboard. Your role: {userRole}
+                </div>
               )
             }
           />
 
           <Route
-            path="/DroneDashboard"
+            path="/drone-dashboard"
             element={
-              isAuthenticated && userRole === "drone_controller" ? (
+              isAuthenticated && userRole === "drone_controller" ? ( // CHANGED: use underscore
                 <MainLayout
                   isAuthenticated={isAuthenticated}
                   onLogout={handleLogout}
@@ -212,9 +216,17 @@ function App() {
                   <DroneDashboard currentLanguage={currentLanguage} />
                 </MainLayout>
               ) : (
-                <Navigate to="/login" />
+                <div style={{ padding: "2rem", color: "red" }}>
+                  Not authorized for Drone Dashboard. Your role: {userRole}
+                </div>
               )
             }
+          />
+
+          {/* Test Route Without Layout */}
+          <Route
+            path="/drone-dashboard-test"
+            element={<DroneDashboard currentLanguage={currentLanguage} />}
           />
 
           <Route

@@ -5,6 +5,8 @@ import { translations } from "../utils/translations"
 import "./Profile.css"
 
 const Profile = ({ currentLanguage }) => {
+  const t = translations[currentLanguage] || translations.en; // ✅ fallback to English
+
   const [profileData, setProfileData] = useState({
     name: "John Farmer",
     email: "john.farmer@email.com",
@@ -13,7 +15,6 @@ const Profile = ({ currentLanguage }) => {
 
   const [isEditing, setIsEditing] = useState(false)
   const [editData, setEditData] = useState({ ...profileData })
-  const t = translations[currentLanguage]
 
   const handleEdit = () => {
     setIsEditing(true)
@@ -39,7 +40,7 @@ const Profile = ({ currentLanguage }) => {
 
   return (
     <div className="profile-container">
-      <h1>{t.accountInfo}</h1>
+      <h1>{t?.accountInfo || "Account Info"}</h1>
 
       <div className="profile-card">
         <div className="profile-header">
@@ -49,27 +50,42 @@ const Profile = ({ currentLanguage }) => {
 
         <div className="profile-form">
           <div className="form-group">
-            <label>{t.name}</label>
+            <label>{t?.name || "Name"}</label>
             {isEditing ? (
-              <input type="text" name="name" value={editData.name} onChange={handleChange} />
+              <input
+                type="text"
+                name="name"
+                value={editData.name}
+                onChange={handleChange}
+              />
             ) : (
               <div className="form-value">{profileData.name}</div>
             )}
           </div>
 
           <div className="form-group">
-            <label>{t.email}</label>
+            <label>{t?.email || "Email"}</label>
             {isEditing ? (
-              <input type="email" name="email" value={editData.email} onChange={handleChange} />
+              <input
+                type="email"
+                name="email"
+                value={editData.email}
+                onChange={handleChange}
+              />
             ) : (
               <div className="form-value">{profileData.email}</div>
             )}
           </div>
 
           <div className="form-group">
-            <label>{t.password}</label>
+            <label>{t?.password || "Password"}</label>
             {isEditing ? (
-              <input type="password" name="password" value={editData.password} onChange={handleChange} />
+              <input
+                type="password"
+                name="password"
+                value={editData.password}
+                onChange={handleChange}
+              />
             ) : (
               <div className="form-value">{profileData.password}</div>
             )}
@@ -79,15 +95,15 @@ const Profile = ({ currentLanguage }) => {
             {isEditing ? (
               <>
                 <button className="save-btn" onClick={handleSave}>
-                  {t.save}
+                  {t?.save || "Save"}
                 </button>
                 <button className="cancel-btn" onClick={handleCancel}>
-                  {t.cancel}
+                  {t?.cancel || "Cancel"}
                 </button>
               </>
             ) : (
               <button className="edit-btn" onClick={handleEdit}>
-                {t.edit}
+                {t?.edit || "Edit"}
               </button>
             )}
           </div>

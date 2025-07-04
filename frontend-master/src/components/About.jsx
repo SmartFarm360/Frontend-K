@@ -1,5 +1,9 @@
 import { translations } from "../utils/translations";
 import "./About.css";
+import Farmer_Image from "/src/assets/Farmer_image.jpg"; // adjust path as needed
+import logo2 from "/src/assets/logo2.png"; // adjust path as needed
+
+
 
 const About = ({ currentLanguage }) => {
   const t = translations?.[currentLanguage] ?? translations["en"];
@@ -19,7 +23,7 @@ const About = ({ currentLanguage }) => {
         </div>
         <div className="about-image">
           <img
-            src="Farmer's Drone.jpg"
+            src={Farmer_Image}
             alt="Farmers holding crops"
             className="farmer-image"
           />
@@ -30,7 +34,7 @@ const About = ({ currentLanguage }) => {
       <div className="product-section">
         <div className="product-text">
           <h2>
-            What is <span className="green-highlight">Smart Farm 360</span>?
+            What is <span className="green-highlight">SmartFarm 360</span>?
           </h2>
           <p>
             <strong>Smart Farm 360</strong> is an AI-driven smart farming platform
@@ -48,7 +52,7 @@ const About = ({ currentLanguage }) => {
           </p>
         </div>
         <div className="product-image">
-          <img src="/smartfarm_product.png" alt="Smart Farm Dashboard" />
+          <img src={logo2} alt="Smart Farm Dashboard" />
         </div>
       </div>
 
