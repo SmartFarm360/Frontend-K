@@ -1,34 +1,39 @@
-import { MapContainer, TileLayer, Rectangle } from 'react-leaflet';
-import { useState } from 'react';
+// components/MapWithGrids.jsx
+import { MapContainer, TileLayer, Polygon } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
-const MapWithGrids = ({ center, gridSize = 0.001, rows = 5, cols = 5 }) => {
-  const [bounds, setBounds] = useState([]);
+const MapWithGrids = () => {
+  const center = [22.5726, 88.3639]; // Kolkata center as example
+  const gridSize = 0.001; // degrees, roughly ~111m
 
-  const generateGrid = () => {
-    const grid = [];
-    const [lat, lng] = center;
-
+  const createGrids = (rows, cols) => {
+    const grids = [];
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
-        const southWest = [lat + i * gridSize, lng + j * gridSize];
-        const northEast = [lat + (i + 1) * gridSize, lng + (j + 1) * gridSize];
-        grid.push({
-          id: `GRID-${i * cols + j + 1}`,
-          bounds: [southWest, northEast],
-        });
+        const lat = center[0] + i * gridSize;
+        const lng = center[1] + j * gridSize;
+        grids.push([
+          [lat, lng],
+          [lat + gridSize, lng],
+          [lat + gridSize, lng + gridSize],
+          [lat, lng + gridSize],
+        ]);
       }
     }
-
-    setBounds(grid);
+    return grids;
   };
 
+  const grids = createGrids(5, 5); // 5x5 grid
+
   return (
-    <MapContainer center={center} zoom={17} scrollWheelZoom={false} style={{ height: "400px", width: "100%" }} whenCreated={generateGrid}>
+    <MapContainer center={center} zoom={16} style={{ height: "100%", width: "100%" }}>
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution="&copy; OpenStreetMap contributors"
       />
-      {bounds.map((cell, idx) => (
-        <Rectangle key={idx} bounds={cell.bounds} pathOptions={{ color: "green" }} />
+      {grids.map((polygon, index) => (
+        <Polygon key={index} positions={polygon} pathOptions={{ color: "green" }} />
       ))}
     </MapContainer>
   );

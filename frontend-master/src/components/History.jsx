@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { MapContainer, TileLayer } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 import { translations } from "../utils/translations";
 import "./History.css";
-
 
 const History = ({ currentLanguage }) => {
   const [historyData, setHistoryData] = useState([]);
@@ -22,7 +23,9 @@ const History = ({ currentLanguage }) => {
       gridId: `GRID-${Math.floor(Math.random() * 100)}`,
       problem: problems[Math.floor(Math.random() * problems.length)],
       status: statuses[Math.floor(Math.random() * statuses.length)],
-      createdDate: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
+      createdDate: new Date(
+        Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000
+      ),
     }));
 
     setHistoryData(data);
@@ -83,12 +86,18 @@ const History = ({ currentLanguage }) => {
           </div>
         </div>
 
-        {/* === Map Placeholder === */}
+        {/* === Simple Map === */}
         <div className="map-placeholder">
-          <div className="map-box">
-            🗺️ <br />
-            {t?.map || "Map will appear here soon!"}
-          </div>
+          <MapContainer
+            center={[23.8103, 90.4125]} // You can set this to your farm's location
+            zoom={10}
+            style={{ height: "300px", width: "100%", borderRadius: "12px" }}
+          >
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            />
+          </MapContainer>
         </div>
       </div>
 

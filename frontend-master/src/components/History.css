@@ -1,12 +1,12 @@
 .history-container {
   max-width: 1400px;
   margin: 0 auto;
+  padding-top: 5rem;
 }
 
 .history-container h1 {
   color: #2d5a27;
   margin-bottom: 2rem;
-  padding-top: 40rem;
   text-align: center;
 }
 
@@ -69,17 +69,21 @@
   color: #fff;
 }
 
-.map-placeholder {
+/* Updated map styling */
+.map-container {
   height: 100%;
-  background: #f3f6f3;
   border-radius: 20px;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
-  min-height: 280px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #888;
-  font-size: 1rem;
+  overflow: hidden;
+  min-height: 300px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  z-index: 0;
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+  border-radius: 20px;
 }
 
 .history-table {
@@ -136,8 +140,8 @@
     grid-template-columns: 1fr;
   }
 
-  .map-placeholder {
-    min-height: 200px;
+  .map-container {
+    min-height: 250px;
   }
 
   .table-header,
@@ -147,10 +151,8 @@
 
   .table-cell:nth-child(4),
   .table-cell:nth-child(5),
-  .table-cell:nth-child(6),
   .table-header .table-cell:nth-child(4),
-  .table-header .table-cell:nth-child(5),
-  .table-header .table-cell:nth-child(6) {
+  .table-header .table-cell:nth-child(5) {
     display: none;
   }
 }
