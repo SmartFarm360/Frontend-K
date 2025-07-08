@@ -1,14 +1,20 @@
 .home-container {
   margin: 0 auto;
   overflow: hidden;
+  min-height: calc(100vh - 100px);
+  padding-top: 0rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
+/* HERO SECTION */
 .hero-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: center;
-  padding: 4rem 2rem;
+  gap: 2rem;
+  align-items: start;
+  padding: 2rem;
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
   position: relative;
   overflow: hidden;
@@ -35,11 +41,9 @@
 .smart {
   color: #4a7c59;
 }
-
 .farm {
   color: #2d5a27;
 }
-
 .number {
   color: #6b8e23;
 }
@@ -88,67 +92,21 @@
   width: 100%;
 }
 
-.hero-animation {
-  position: relative;
-  height: 500px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 0;
+/* IMAGE SIDE */
+.hero-image-container {
+  width: 100%;
+  height: 100%;
 }
 
-.floating-icon {
-  position: absolute;
-  width: 90px;
-  height: 90px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.8rem;
-  animation: floatAndRotate 4s ease-in-out infinite;
-  transition: transform 0.3s ease;
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
 }
 
-.floating-icon:hover {
-  transform: scale(1.1);
-}
-
-.floating-icon:nth-child(1) {
-  top: 15%;
-  left: 15%;
-  animation-delay: 0s;
-}
-
-.floating-icon:nth-child(2) {
-  top: 65%;
-  right: 15%;
-  animation-delay: 0.5s;
-}
-
-.floating-icon:nth-child(3) {
-  bottom: 15%;
-  left: 25%;
-  animation-delay: 1s;
-}
-
-.floating-icon:nth-child(4) {
-  top: 35%;
-  right: 25%;
-  animation-delay: 1.5s;
-}
-
-@keyframes floatAndRotate {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-30px) rotate(10deg);
-  }
-}
-
+/* FEATURES SECTION */
 .features-section {
   padding: 5rem 2rem;
   text-align: center;
@@ -211,6 +169,7 @@
   font-size: 1.1rem;
 }
 
+/* RESPONSIVE DESIGN */
 @media (max-width: 768px) {
   .hero-section {
     grid-template-columns: 1fr;
@@ -223,14 +182,10 @@
     font-size: 2.8rem;
   }
 
-  .hero-animation {
-    height: 250px;
-  }
-
-  .floating-icon {
-    font-size: 2.2rem;
-    width: 70px;
-    height: 70px;
+  .hero-image {
+    max-height: 300px;
+    object-fit: cover;
+    margin-top: 1rem;
   }
 
   .features-section h2 {
@@ -251,11 +206,4 @@
     padding: 12px 24px;
     font-size: 1rem;
   }
-}
-.home-container {
-  min-height: calc(100vh - 100px); /* adjust based on your navbar+footer height */
-  padding-top: 2rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }

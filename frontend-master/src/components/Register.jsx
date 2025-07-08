@@ -1,13 +1,13 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { translations } from "../utils/translations";
-import "./Register.css";
+import { useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { translations } from "../utils/translations"
+import "./Register.css"
 
 const Register = ({ currentLanguage, onRegister }) => {
   const [formData, setFormData] = useState({
-    fullName: "",
+    firstName: "",
     email: "",
     mobile: "",
     password: "",
@@ -21,138 +21,284 @@ const Register = ({ currentLanguage, onRegister }) => {
     base_location: "",
     available_drones: "",
     flight_experience: "",
-  });
+  })
 
-  const [landDocument, setLandDocument] = useState(null);
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // ✅ Fallback to "en" if currentLanguage is undefined
-  const t = translations[currentLanguage] || translations["en"];
-
-  const navigate = useNavigate();
+  const [locationSuggestions, setLocationSuggestions] = useState([])
+  const [landDocument, setLandDocument] = useState(null)
+  const [errors, setErrors] = useState({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const t = translations[currentLanguage] || translations["en"]
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-  
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+
+    if (name === "farm_location" && value.length >= 3) {
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(value)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setLocationSuggestions(data.slice(0, 5))
+        })
+        .catch((err) => console.error("Location fetch error:", err))
+    } else if (name === "farm_location" && value.length < 3) {
+      setLocationSuggestions([])
+    }
+  }
+
+  const handleLocationSelect = (location) => {
+    setFormData((prev) => ({
+      ...prev,
+      farm_location: location.display_name,
+      latitude: location.lat,
+      longitude: location.lon,
+    }))
+    setLocationSuggestions([])
+  }
 
   const validateForm = () => {
-    const validationErrors = {};
-    if (!formData.firstName?.trim()) validationErrors.firstName = t.requiredField || "This field is required.";
-    if (!formData.email.includes("@")) validationErrors.email = t.invalidEmail || "Invalid email format.";
-    if (!formData.mobile?.trim()) validationErrors.mobile = t.requiredField || "This field is required.";
-    if (formData.password.length < 8) validationErrors.password = t.passwordError || "Password must be at least 8 characters.";
-    if (formData.password !== formData.confirmPassword) validationErrors.confirmPassword = t.passwordMismatch || "Passwords do not match.";
-    if (formData.role === "farmer" && !landDocument) validationErrors.landDocument = "Land document is required.";
+    const validationErrors = {}
+    if (!formData.firstName?.trim()) validationErrors.firstName = t.requiredField || "This field is required."
+    if (!formData.email.includes("@")) validationErrors.email = t.invalidEmail || "Invalid email format."
+    if (!formData.mobile?.trim()) validationErrors.mobile = t.requiredField || "This field is required."
+    if (formData.password.length < 8)
+      validationErrors.password = t.passwordError || "Password must be at least 8 characters."
+    if (formData.password !== formData.confirmPassword)
+      validationErrors.confirmPassword = t.passwordMismatch || "Passwords do not match."
+    if (formData.role === "farmer" && !landDocument) validationErrors.landDocument = "Land document is required."
 
-    setErrors(validationErrors);
-    return Object.keys(validationErrors).length === 0;
-  };
+    return Object.keys(validationErrors).length === 0 ? (setErrors({}), true) : (setErrors(validationErrors), false)
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    setIsSubmitting(true);
+    e.preventDefault()
+    if (!validateForm()) return
+
+    setIsSubmitting(true)
 
     try {
-      const submissionData = new FormData();
-      submissionData.append("name", formData.firstName);
-      submissionData.append("email", formData.email);
-      submissionData.append("mobile", formData.mobile);
-      submissionData.append("password", formData.password);
-      submissionData.append("confirmPassword", formData.confirmPassword);
-      submissionData.append("role", formData.role);
+      const submissionData = new FormData()
+      submissionData.append("name", formData.firstName)
+      submissionData.append("email", formData.email)
+      submissionData.append("mobile", formData.mobile)
+      submissionData.append("password", formData.password)
+      submissionData.append("confirmPassword", formData.confirmPassword)
+      submissionData.append("role", formData.role)
 
       if (formData.role === "farmer") {
-        submissionData.append("landSize", formData.land_size);
-        submissionData.append("location", formData.farm_location);
-        submissionData.append("experience", formData.experience);
-        submissionData.append("cropType", formData.crop_type);
-        submissionData.append("landDocument", landDocument);
+        submissionData.append("landSize", formData.land_size)
+        submissionData.append("location", formData.farm_location)
+        submissionData.append("latitude", formData.latitude || "")
+        submissionData.append("longitude", formData.longitude || "")
+        submissionData.append("experience", formData.experience)
+        submissionData.append("cropType", formData.crop_type)
+        submissionData.append("landDocument", landDocument)
       } else if (formData.role === "drone controller") {
-        submissionData.append("licenseId", formData.license_id);
-        submissionData.append("baseLocation", formData.base_location);
-        submissionData.append("availableDrones", formData.available_drones);
-        submissionData.append("flightExperience", formData.flight_experience);
+        submissionData.append("licenseId", formData.license_id)
+        submissionData.append("baseLocation", formData.base_location)
+        submissionData.append("availableDrones", formData.available_drones)
+        submissionData.append("flightExperience", formData.flight_experience)
       }
 
       const response = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         body: submissionData,
-      });
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Registration failed");
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Registration failed")
       }
 
-      alert("Registration successful!");
-      navigate("/login");
+      alert("Registration successful!")
+      navigate("/login")
     } catch (registerError) {
-      console.error("Registration error:", registerError);
-      setErrors({ submit: registerError.message || "Registration failed. Please try again." });
+      console.error("Registration error:", registerError)
+      setErrors({ submit: registerError.message || "Registration failed. Please try again." })
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   const renderRoleFields = () => {
+    if (!formData.role) return null
+
     switch (formData.role) {
       case "farmer":
         return (
-          <>
-            <div className="form-group">
-              <label>{t.farmLocation || "Farm Location"}</label>
-              <input type="text" name="farm_location" value={formData.farm_location} onChange={handleChange} required placeholder="Enter Farm Location" />
+          <div className="role-section">
+            <div className="role-header">
+              <div className="role-icon farmer-icon">🌱</div>
+              <h3 className="role-title">Farmer Details</h3>
             </div>
-            <div className="form-group">
-              <label>{t.landSize || "Land Size"}</label>
-              <input type="text" name="land_size" value={formData.land_size} onChange={handleChange} required placeholder="Enter Land Size" />
+
+            <div className="form-group location-group">
+              <label className="form-label">
+                <span className="label-icon">📍</span>
+                {t.farmLocation || "Farm Location"}
+              </label>
+              <input
+                type="text"
+                name="farm_location"
+                value={formData.farm_location}
+                onChange={handleChange}
+                placeholder="Start typing farm location..."
+                autoComplete="off"
+                className="form-input"
+              />
+              {locationSuggestions.length > 0 && (
+                <ul className="location-dropdown">
+                  {locationSuggestions.map((location, index) => (
+                    <li key={index} onClick={() => handleLocationSelect(location)}>
+                      {location.display_name}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
-            <div className="form-group">
-              <label>{t.cropType || "Crop Type"}</label>
-              <input type="text" name="crop_type" value={formData.crop_type} onChange={handleChange} required placeholder="Enter Crop Type" />
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">{t.landSize || "Land Size"}</label>
+                <input
+                  type="text"
+                  name="land_size"
+                  value={formData.land_size}
+                  onChange={handleChange}
+                  placeholder="e.g., 5 acres"
+                  className="form-input"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">{t.cropType || "Crop Type"}</label>
+                <input
+                  type="text"
+                  name="crop_type"
+                  value={formData.crop_type}
+                  onChange={handleChange}
+                  placeholder="e.g., Rice, Wheat"
+                  className="form-input"
+                  required
+                />
+              </div>
             </div>
+
             <div className="form-group">
-              <label>{t.experienceYears || "Experience (Years)"}</label>
-              <input type="number" name="experience" value={formData.experience} onChange={handleChange} placeholder="Enter Experience in Years" />
+              <label className="form-label">{t.experienceYears || "Experience (Years)"}</label>
+              <input
+                type="number"
+                name="experience"
+                value={formData.experience}
+                onChange={handleChange}
+                placeholder="Years of farming experience"
+                className="form-input"
+                min="0"
+              />
             </div>
-            <div className="form-group">
-              <label>Land Document (PDF or Image)</label>
-              <input type="file" accept=".pdf,.jpg,.jpeg,.png" onChange={(e) => setLandDocument(e.target.files[0])} required />
+
+            <div className="form-group file-group">
+              <label className="form-label">
+                <span className="label-icon">📄</span>
+                Land Document (PDF or Image)
+              </label>
+              <input
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png"
+                onChange={(e) => setLandDocument(e.target.files[0])}
+                className="file-input"
+                required
+              />
               {errors.landDocument && <span className="error">{errors.landDocument}</span>}
             </div>
-          </>
-        );
+          </div>
+        )
 
       case "drone controller":
         return (
-          <>
-            <div className="form-group">
-              <label>{t.licenseId || "License ID"}</label>
-              <input type="text" name="license_id" value={formData.license_id} onChange={handleChange} required placeholder="Enter License ID" />
+          <div className="role-section">
+            <div className="role-header">
+              <div className="role-icon drone-icon">🚁</div>
+              <h3 className="role-title">Drone Controller Details</h3>
             </div>
-            <div className="form-group">
-              <label>{t.baseLocation || "Base Location"}</label>
-              <input type="text" name="base_location" value={formData.base_location} onChange={handleChange} required placeholder="Enter Base Location" />
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">{t.licenseId || "License ID"}</label>
+                <input
+                  type="text"
+                  name="license_id"
+                  value={formData.license_id}
+                  onChange={handleChange}
+                  placeholder="Enter License ID"
+                  className="form-input"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">{t.baseLocation || "Base Location"}</label>
+                <input
+                  type="text"
+                  name="base_location"
+                  value={formData.base_location}
+                  onChange={handleChange}
+                  placeholder="Enter Base Location"
+                  className="form-input"
+                  required
+                />
+              </div>
             </div>
-            <div className="form-group">
-              <label>{t.availableDrones || "Available Drones"}</label>
-              <input type="number" name="available_drones" value={formData.available_drones} onChange={handleChange} required placeholder="Enter Number of Available Drones" />
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">{t.availableDrones || "Available Drones"}</label>
+                <input
+                  type="number"
+                  name="available_drones"
+                  value={formData.available_drones}
+                  onChange={handleChange}
+                  placeholder="Number of drones"
+                  className="form-input"
+                  min="1"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">{t.flightExperienceYears || "Flight Experience (Years)"}</label>
+                <input
+                  type="number"
+                  name="flight_experience"
+                  value={formData.flight_experience}
+                  onChange={handleChange}
+                  placeholder="Years of experience"
+                  className="form-input"
+                  min="0"
+                />
+              </div>
             </div>
-            <div className="form-group">
-              <label>{t.flightExperienceYears || "Flight Experience (Years)"}</label>
-              <input type="number" name="flight_experience" value={formData.flight_experience} onChange={handleChange} placeholder="Enter Flight Experience in Years" />
+          </div>
+        )
+
+      case "admin":
+        return (
+          <div className="role-section">
+            <div className="role-header">
+              <div className="role-icon admin-icon">🛡️</div>
+              <h3 className="role-title">Admin Access</h3>
             </div>
-          </>
-        );
+            <div className="admin-note">
+              <p>Admin privileges will be granted after verification.</p>
+            </div>
+          </div>
+        )
 
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <div className="register-container">
@@ -162,55 +308,166 @@ const Register = ({ currentLanguage, onRegister }) => {
             <div className="logo">🌱</div>
             <h1>Smart Farm 360</h1>
           </div>
-          <p className="tagline">{t.registerTagline || "Create your account"}</p>
+          <p className="tagline">
+            {t.registerTagline || "Join Smart Farm 360 and revolutionize your farming experience"}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="register-form">
-          <div className="form-group">
-            <label htmlFor="firstName">{t.firstName || "First Name"}</label>
-            <input type="text" id="firstName" name="firstName" value={formData.firstName} onChange={handleChange} placeholder={t.enterFirstName || "Enter First Name"} required />
-            {errors.firstName && <span className="error">{errors.firstName}</span>}
+          {/* Basic Information Section */}
+          <div className="form-section">
+            <h3 className="section-title">
+              <span className="section-icon">👤</span>
+              Basic Information
+            </h3>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="firstName" className="form-label">
+                  <span className="label-icon">👤</span>
+                  {t.firstName || "First Name"}
+                </label>
+                <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  placeholder={t.enterFirstName || "Enter First Name"}
+                  className={`form-input ${errors.firstName ? "error-input" : ""}`}
+                  required
+                />
+                {errors.firstName && <span className="error">{errors.firstName}</span>}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="email" className="form-label">
+                  <span className="label-icon">📧</span>
+                  {t.email || "Email"}
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder={t.enterEmail || "Enter Email"}
+                  className={`form-input ${errors.email ? "error-input" : ""}`}
+                  required
+                />
+                {errors.email && <span className="error">{errors.email}</span>}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="mobile" className="form-label">
+                <span className="label-icon">📱</span>
+                {t.mobile || "Mobile Number"}
+              </label>
+              <input
+                type="tel"
+                id="mobile"
+                name="mobile"
+                value={formData.mobile}
+                onChange={handleChange}
+                placeholder={t.enterMobile || "Enter Mobile Number"}
+                className={`form-input ${errors.mobile ? "error-input" : ""}`}
+                required
+              />
+              {errors.mobile && <span className="error">{errors.mobile}</span>}
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="password" className="form-label">
+                  <span className="label-icon">🔒</span>
+                  {t.createPassword || "Create Password"}
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder={t.enterPassword || "Enter Password"}
+                  className={`form-input ${errors.password ? "error-input" : ""}`}
+                  required
+                />
+                {errors.password && <span className="error">{errors.password}</span>}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="confirmPassword" className="form-label">
+                  <span className="label-icon">🔒</span>
+                  {t.confirmPassword || "Confirm Password"}
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder={t.reEnterPassword || "Re-enter Password"}
+                  className={`form-input ${errors.confirmPassword ? "error-input" : ""}`}
+                  required
+                />
+                {errors.confirmPassword && <span className="error">{errors.confirmPassword}</span>}
+              </div>
+            </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="email">{t.email || "Email"}</label>
-            <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} placeholder={t.enterEmail || "Enter Email"} required />
-            {errors.email && <span className="error">{errors.email}</span>}
+          <div className="section-divider"></div>
+
+          {/* Role Selection */}
+          <div className="form-section">
+            <h3 className="section-title">Select Your Role</h3>
+            <div className="form-group">
+              <label className="form-label">{t.role || "Role"}</label>
+              <select name="role" value={formData.role} onChange={handleChange} className="form-select" required>
+                <option value="">-- Select Role --</option>
+                <option value="farmer">🌱 {t.farmer || "Farmer"}</option>
+                <option value="admin">🛡️ {t.admin || "Admin"}</option>
+                <option value="drone controller">🚁 {t.droneController || "Drone Controller"}</option>
+              </select>
+            </div>
+
+            {formData.role && (
+              <div className={`role-badge ${formData.role.replace(" ", "-")}-badge`}>
+                <span className="badge-icon">
+                  {formData.role === "farmer" ? "🌱" : formData.role === "admin" ? "🛡️" : "🚁"}
+                </span>
+                {formData.role === "farmer" ? t.farmer : formData.role === "admin" ? t.admin : t.droneController}
+              </div>
+            )}
           </div>
 
-          <div className="form-group">
-            <label htmlFor="mobile">{t.mobile || "Mobile Number"}</label>
-            <input type="tel" id="mobile" name="mobile" value={formData.mobile} onChange={handleChange} placeholder={t.enterMobile || "Enter Mobile Number"} required />
-            {errors.mobile && <span className="error">{errors.mobile}</span>}
-          </div>
+          {/* Role-specific fields */}
+          {formData.role && (
+            <>
+              <div className="section-divider"></div>
+              {renderRoleFields()}
+            </>
+          )}
 
-          <div className="form-group">
-            <label htmlFor="password">{t.createPassword || "Create Password"}</label>
-            <input type="password" id="password" name="password" value={formData.password} onChange={handleChange} placeholder={t.enterPassword || "Enter Password"} required />
-            {errors.password && <span className="error">{errors.password}</span>}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="confirmPassword">{t.confirmPassword || "Confirm Password"}</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder={t.reEnterPassword || "Re-enter Password"} required />
-            {errors.confirmPassword && <span className="error">{errors.confirmPassword}</span>}
-          </div>
-
-          <div className="form-group">
-            <label>{t.role || "Role"}</label>
-            <select name="role" value={formData.role} onChange={handleChange} required>
-              <option value="farmer">{t.farmer || "Farmer"}</option>
-              <option value="admin">{t.admin || "Admin"}</option>
-              <option value="drone controller">{t.droneController || "Drone Controller"}</option>
-            </select>
-          </div>
-
-          {renderRoleFields()}
-
-          {errors.submit && <span className="error">{errors.submit}</span>}
+          {errors.submit && (
+            <div className="error-alert">
+              <span className="error-icon">⚠️</span>
+              {errors.submit}
+            </div>
+          )}
 
           <button type="submit" className="register-btn" disabled={isSubmitting}>
-            {isSubmitting ? t.registering || "Registering..." : t.register || "Register"}
+            {isSubmitting ? (
+              <>
+                <span className="loading-spinner"></span>
+                {t.registering || "Creating Account..."}
+              </>
+            ) : (
+              <>
+                <span className="btn-icon">✅</span>
+                {t.register || "Create Account"}
+              </>
+            )}
           </button>
         </form>
 
@@ -218,13 +475,13 @@ const Register = ({ currentLanguage, onRegister }) => {
           <p>
             {t.haveAccount || "Already have an account?"}{" "}
             <Link to="/login" className="login-link">
-              {t.login || "Login"}
+              {t.login || "Sign In"}
             </Link>
           </p>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Register;
+export default Register

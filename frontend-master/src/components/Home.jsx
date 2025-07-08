@@ -2,6 +2,8 @@
 import { useNavigate } from "react-router-dom";
 import { translations } from "../utils/translations";
 import "./Home.css";
+// import drone_spraying from "/src/assets/drone_spraying.jpg"; // adjust path as needed
+import drone2 from "/src/assets/drone2.jpg"; // Make sure this image exists in public/assets/
 
 const Home = ({ currentLanguage }) => {
   const navigate = useNavigate();
@@ -28,11 +30,13 @@ const Home = ({ currentLanguage }) => {
           </button>
         </div>
 
-        <div className="hero-animation">
-          <div className="floating-icon">🌾</div>
-          <div className="floating-icon">🚜</div>
-          <div className="floating-icon">🌱</div>
-          <div className="floating-icon">💧</div>
+        {/* ✅ Image instead of floating icons */}
+        <div className="hero-image-container">
+          <img
+            src={drone2} // Make sure this image exists in public/images/
+            alt="Smart farming illustration"
+            className="hero-image"
+          />
         </div>
       </div>
 

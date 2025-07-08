@@ -11,6 +11,7 @@ const baseText = {
   history: "History",
   login: "Login",
   logout: "Logout",
+  blog : "Blog",
   accountInfo: "Account Information",
   help: "Help",
   sendFeedback: "Send Feedback",
