@@ -1,0 +1,194 @@
+"use client"
+
+import { useState } from "react"
+import { translations } from "../utils/translations"
+import "./Profile.css"
+
+const Profile = ({ currentLanguage }) => {
+  const t = translations[currentLanguage] || translations.en
+
+  const [profileData, setProfileData] = useState({
+    name: "John Farmer",
+    email: "john.farmer@email.com",
+    password: "********",
+  })
+
+  const [isEditing, setIsEditing] = useState(false)
+  const [editData, setEditData] = useState({ ...profileData })
+  const [showSuccess, setShowSuccess] = useState(false)
+
+  const handleEdit = () => {
+    setIsEditing(true)
+    setEditData({ ...profileData })
+  }
+
+  const handleSave = () => {
+    setProfileData({ ...editData })
+    setIsEditing(false)
+    setShowSuccess(true)
+    setTimeout(() => setShowSuccess(false), 3000)
+  }
+
+  const handleCancel = () => {
+    setEditData({ ...profileData })
+    setIsEditing(false)
+  }
+
+  const handleChange = (e) => {
+    setEditData({
+      ...editData,
+      [e.target.name]: e.target.value,
+    })
+  }
+
+  const getInitials = (name) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+  }
+
+  return (
+    <div className="profile-page">
+      <div className="profile-container">
+        {/* Success Message */}
+        {showSuccess && (
+          <div className="success-message">
+            <span className="success-icon">✓</span>
+            <span>{t?.profileUpdated || "Profile updated successfully!"}</span>
+          </div>
+        )}
+
+        {/* Header */}
+        <div className="page-header">
+          <h1>{t?.accountInfo || "Account Information"}</h1>
+          <p className="page-subtitle">Manage your personal information and account settings</p>
+        </div>
+
+        {/* Profile Card */}
+        <div className="profile-card">
+          {/* Profile Header */}
+          <div className="profile-header">
+            <div className="profile-avatar">
+              <span className="avatar-text">{getInitials(profileData.name)}</span>
+            </div>
+            <div className="profile-info">
+              <h2>{profileData.name}</h2>
+              <p className="profile-email">{profileData.email}</p>
+              <div className="status-badge">Active Account</div>
+            </div>
+          </div>
+
+          {/* Profile Form */}
+          <div className="profile-form">
+            <div className="form-header">
+              <div className="form-title-section">
+                <h3 className="form-title">Personal Details</h3>
+                <p className="form-subtitle">Update your account information below</p>
+              </div>
+              {!isEditing && (
+                <button className="edit-btn-header" onClick={handleEdit}>
+                  <span className="edit-icon">✏️</span>
+                  {t?.edit || "Edit Profile"}
+                </button>
+              )}
+            </div>
+
+            <div className="form-divider"></div>
+
+            <div className="form-fields">
+              {/* Name Field */}
+              <div className="form-group">
+                <label className="form-label">
+                  <span className="label-icon">👤</span>
+                  {t?.name || "Full Name"}
+                </label>
+                {isEditing ? (
+                  <input type="text" name="name" value={editData.name} onChange={handleChange} className="form-input" />
+                ) : (
+                  <div className="form-value">{profileData.name}</div>
+                )}
+              </div>
+
+              {/* Email Field */}
+              <div className="form-group">
+                <label className="form-label">
+                  <span className="label-icon">📧</span>
+                  {t?.email || "Email Address"}
+                </label>
+                {isEditing ? (
+                  <input
+                    type="email"
+                    name="email"
+                    value={editData.email}
+                    onChange={handleChange}
+                    className="form-input"
+                  />
+                ) : (
+                  <div className="form-value">{profileData.email}</div>
+                )}
+              </div>
+
+              {/* Password Field */}
+              <div className="form-group">
+                <label className="form-label">
+                  <span className="label-icon">🔒</span>
+                  {t?.password || "Password"}
+                </label>
+                {isEditing ? (
+                  <input
+                    type="password"
+                    name="password"
+                    value={editData.password}
+                    onChange={handleChange}
+                    className="form-input"
+                  />
+                ) : (
+                  <div className="form-value">••••••••</div>
+                )}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            {isEditing && (
+              <>
+                <div className="form-divider"></div>
+                <div className="form-actions">
+                  <button className="cancel-btn" onClick={handleCancel}>
+                    <span className="btn-icon">✕</span>
+                    {t?.cancel || "Cancel"}
+                  </button>
+                  <button className="save-btn" onClick={handleSave}>
+                    <span className="btn-icon">💾</span>
+                    {t?.save || "Save Changes"}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Additional Info Card */}
+        <div className="info-card">
+          <div className="info-header">
+            <h3>Account Status</h3>
+            <p>Your account information and status</p>
+          </div>
+          <div className="info-content">
+            <div className="info-item premium">
+              <span className="info-label">Account Type</span>
+              <span className="info-badge premium-badge">Premium</span>
+            </div>
+            <div className="info-item member">
+              <span className="info-label">Member Since</span>
+              <span className="info-value">January 2024</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default Profile
