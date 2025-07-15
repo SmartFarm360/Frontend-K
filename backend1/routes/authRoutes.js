@@ -6,7 +6,7 @@ const { cropImageUpload, landDocumentUpload } = require('../middleware/backBlaze
 const { register, login, logout, sendOTP, verifyOTP } = require('../controllers/authController');
 
 // Register Route (with OTP check)
-router.post('/register', otpVerifiedCheck, landDocumentUpload.single('landDocument'), register);
+router.post('/register',  landDocumentUpload.single('landDocument'), register);
 
 // Login Route
 router.post('/login', login);

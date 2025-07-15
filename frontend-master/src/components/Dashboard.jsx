@@ -1,5 +1,7 @@
 "use client"
-import { useState, useEffect ,useRef} from "react"
+import { useState, useEffect } from "react"
+const apiKey = import.meta.env.VITE_MAPMYINDIA_API_KEY;
+
 import "./Dashboard.css"
 import {
   Thermometer,
@@ -42,7 +44,7 @@ const translations = {
     viewDetails: "View Details",
   },
 }
-const mapRef = useRef(null); // 🆕 For holding map instance
+
 
 const Dashboard = ({ currentLanguage = "en", translatedText }) => {
   const [dashboardData, setDashboardData] = useState({
@@ -92,7 +94,7 @@ const Dashboard = ({ currentLanguage = "en", translatedText }) => {
 
   const script = document.createElement("script");
   script.id = "mapmyindia-script";
-  script.src = "https://apis.mapmyindia.com/advancedmaps/v1/<YOUR_API_KEY>/map_load?v=1.5";
+ script.src = `https://apis.mapmyindia.com/advancedmaps/v1/${apiKey}/map_load?v=1.5`;
   script.async = true;
 
   script.onload = () => {
@@ -113,7 +115,6 @@ const Dashboard = ({ currentLanguage = "en", translatedText }) => {
 
   document.body.appendChild(script);
 }, []);
-
 
   useEffect(() => {
     const generateData = () => {

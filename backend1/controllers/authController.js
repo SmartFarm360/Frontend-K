@@ -11,7 +11,16 @@ const axios = require('axios');
 let blacklistedTokens = [];
 
 exports.register = async (req, res) => {
-    const { name, email, mobile, password, confirmPassword, role } = req.body;
+    console.log(req.body);
+    let { name, email, mobile, password, confirmPassword, role } = req.body;
+
+    // Normalize role: trim, lowercase, replace spaces with underscores
+    role = role?.trim().toLowerCase().replace(/\s+/g, '_');
+
+    const allowedRoles = ['farmer', 'admin', 'drone_controller'];
+    if (!allowedRoles.includes(role)) {
+        return res.status(400).json({ message: 'Invalid role provided.' });
+    }
 
     const client = await pool.connect();
 
@@ -60,7 +69,6 @@ exports.register = async (req, res) => {
 
             const fileBuffer = req.file.buffer;
             const fileName = `land-documents/${Date.now()}-${req.file.originalname}`;
-
             const backblazeUrl = await uploadToBackblaze(fileName, fileBuffer, req.file.mimetype);
 
             const insertFarmerQuery = `
@@ -78,7 +86,7 @@ exports.register = async (req, res) => {
             `;
             await client.query(insertAdminQuery, [userId, employeeId, adminArea, accessLevel]);
 
-        } else if (role === 'drone controller') {
+        } else if (role === 'drone_controller') {
             const { licenseId, baseLocation, availableDrones, flightExperience } = req.body;
 
             const insertDroneQuery = `
@@ -86,10 +94,6 @@ exports.register = async (req, res) => {
                 VALUES ($1, $2, $3, $4, $5)
             `;
             await client.query(insertDroneQuery, [userId, licenseId, baseLocation, availableDrones, flightExperience]);
-
-        } else {
-            await client.query('ROLLBACK');
-            return res.status(400).json({ message: 'Invalid role.' });
         }
 
         // Commit transaction
@@ -111,6 +115,7 @@ exports.register = async (req, res) => {
         client.release();
     }
 };
+
 
 // async function sendOtpToPhone(phone, otp) {
 //     const options = {
