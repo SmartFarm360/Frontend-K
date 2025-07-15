@@ -1,3 +1,6 @@
+
+
+
 /* Reset and Base Styles */
 * {
   box-sizing: border-box;
@@ -7,7 +10,7 @@
 .dashboard-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #f8fafc 0%, #f0fdf4 50%, #ecfdf5 100%);
-  padding: 0;
+  padding-top: 6rem;
   margin: 0;
 }
 
@@ -43,6 +46,10 @@
 }
 
 /* Main Section: Map and Parameters */
+#map {
+  min-height: 400px;
+}
+
 .main-section {
   display: grid;
   grid-template-columns: 2fr 1fr;

@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect ,useRef} from "react"
 import "./Dashboard.css"
 import {
   Thermometer,
@@ -42,6 +42,7 @@ const translations = {
     viewDetails: "View Details",
   },
 }
+const mapRef = useRef(null); // 🆕 For holding map instance
 
 const Dashboard = ({ currentLanguage = "en", translatedText }) => {
   const [dashboardData, setDashboardData] = useState({
@@ -85,6 +86,34 @@ const Dashboard = ({ currentLanguage = "en", translatedText }) => {
   }
 
   const [gridData, setGridData] = useState(generateGridData())
+
+ useEffect(() => {
+  if (document.getElementById("mapmyindia-script")) return;
+
+  const script = document.createElement("script");
+  script.id = "mapmyindia-script";
+  script.src = "https://apis.mapmyindia.com/advancedmaps/v1/<YOUR_API_KEY>/map_load?v=1.5";
+  script.async = true;
+
+  script.onload = () => {
+    setTimeout(() => {
+      if (!window.mapInstance && document.getElementById("map")) {
+        window.mapInstance = new window.MapmyIndia.Map("map", {
+          center: [28.61, 77.23],
+          zoom: 10,
+        });
+
+        window.L.marker([28.61, 77.23])
+          .addTo(window.mapInstance)
+          .bindPopup("Farm Location")
+          .openPopup();
+      }
+    }, 300); // delay to ensure #map div is present
+  };
+
+  document.body.appendChild(script);
+}, []);
+
 
   useEffect(() => {
     const generateData = () => {
@@ -213,12 +242,9 @@ const Dashboard = ({ currentLanguage = "en", translatedText }) => {
                 {selectedGrid && <span className="selected-grid-info">- Viewing {selectedGrid.id}</span>}
               </div>
               <div className="map-placeholder">
-                <div className="map-content">
-                  <MapPin className="large-map-icon" />
-                  <p className="map-text">Interactive Farm Map</p>
-                  <p className="map-subtext">Click on grid items to view location</p>
-                </div>
+                <div id="map" style={{ height: "100%", width: "100%", borderRadius: "12px" }}></div>
               </div>
+
             </div>
           </div>
 
