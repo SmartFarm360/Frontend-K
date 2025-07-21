@@ -260,3 +260,83 @@ exports.verifyOTP = async (req, res) => {
         res.status(500).json({ message: 'Server error while verifying OTP' });
     }
 }
+
+
+exports.getProfile = async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+
+    const result = await pool.query(
+      'SELECT full_name, email, created_at FROM users WHERE user_id = $1',
+      [userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const user = result.rows[0]; //  Define the user variable here
+
+    res.status(200).json({
+      name: user.full_name,
+      email: user.email,
+      password: "********", 
+      created_at: new Date(user.created_at).toISOString(), //  No error now
+    });
+  } catch (err) {
+    console.error("Error in getProfile:", err.message);
+    res.status(500).json({ message: "Server error while fetching profile" });
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+    const { name, email, password } = req.body;
+
+    if (!name || !email) {
+      return res.status(400).json({ message: "Name and email are required" });
+    }
+
+    let query;
+    let values;
+
+    if (password && password.trim() !== "") {
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      query = `
+        UPDATE users 
+        SET full_name = $1, email = $2, password_hash = $3 
+        WHERE user_id = $4 
+        RETURNING full_name, email, created_at
+      `;
+      values = [name, email, hashedPassword, userId];
+    } else {
+      query = `
+        UPDATE users 
+        SET full_name = $1, email = $2 
+        WHERE user_id = $3 
+        RETURNING full_name, email, created_at
+      `;
+      values = [name, email, userId];
+    }
+
+    const result = await pool.query(query, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "User not found or not updated" });
+    }
+
+    const updatedUser = result.rows[0];
+
+    res.status(200).json({
+      name: updatedUser.full_name,
+      email: updatedUser.email,
+      password: "********",
+      created_at: new Date(updatedUser.created_at).toISOString(),
+    });
+  } catch (err) {
+    console.error("Error updating profile:", err.message);
+    res.status(500).json({ message: "Server error while updating profile" });
+  }
+};

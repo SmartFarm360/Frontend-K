@@ -199,9 +199,9 @@ const MainLayout = ({
           </div>
           <div className="footer-section">
             <h4>{t.contactUs}</h4>
-            <p>📧 info@smartfarm360.com</p>
+            <p>📧 info.smartfarm360@gmail.com</p>
             <p>📞 +91 xxxxxxxx</p>
-            <p>📍 Bhubaneshwar, India</p>
+            <p>📍 Bhubaneswar, India</p>
           </div>
         </div>
         <div className="footer-bottom">

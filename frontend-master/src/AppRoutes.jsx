@@ -169,24 +169,23 @@ function AppRoutes() {
           }
         />
 
-        {/* PROFILE */}
-        <Route
-          path="/profile"
-          element={
-            isAuthenticated ? (
-              <MainLayout
-                isAuthenticated={isAuthenticated}
-                onLogout={handleLogout}
-                currentLanguage={currentLanguage}
-                setCurrentLanguage={setCurrentLanguage}
-              >
-                <Profile currentLanguage={currentLanguage} />
-              </MainLayout>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
+       <Route
+  path="/profile"
+  element={
+    isAuthenticated ? (
+      <MainLayout
+        isAuthenticated={isAuthenticated}
+        onLogout={handleLogout}
+        currentLanguage={currentLanguage}
+        setCurrentLanguage={setCurrentLanguage}
+      >
+        <Profile currentLanguage={currentLanguage} />
+      </MainLayout>
+    ) : (
+      <Navigate to="/login" replace />
+    )
+  }
+/>
 
         {/* BLOG */}
         <Route

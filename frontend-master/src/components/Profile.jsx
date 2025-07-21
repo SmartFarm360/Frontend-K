@@ -1,33 +1,68 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import axios from "axios"
 import { translations } from "../utils/translations"
 import "./Profile.css"
 
 const Profile = ({ currentLanguage }) => {
   const t = translations[currentLanguage] || translations.en
 
-  const [profileData, setProfileData] = useState({
-    name: "John Farmer",
-    email: "john.farmer@email.com",
-    password: "********",
-  })
-
+  const [profileData, setProfileData] = useState(null)
   const [isEditing, setIsEditing] = useState(false)
-  const [editData, setEditData] = useState({ ...profileData })
+  const [editData, setEditData] = useState({})
   const [showSuccess, setShowSuccess] = useState(false)
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/auth/profile", {
+          withCredentials: true, // if using cookies
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // if using token
+          },
+        })
+        setProfileData(res.data)
+        setEditData(res.data)
+      } catch (err) {
+        console.error("Error fetching profile:", err)
+      }
+    }
+
+    fetchProfile()
+  }, [])
 
   const handleEdit = () => {
     setIsEditing(true)
     setEditData({ ...profileData })
   }
 
-  const handleSave = () => {
-    setProfileData({ ...editData })
-    setIsEditing(false)
-    setShowSuccess(true)
-    setTimeout(() => setShowSuccess(false), 3000)
+const handleSave = async () => {
+  try {
+    const res = await axios.put("http://localhost:5000/api/auth/profile", {
+      name: editData.name,
+      email: editData.email,
+      password: editData.password, // ✅ Include password
+    }, {
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    setProfileData(res.data);
+    setEditData(res.data);
+    setIsEditing(false);
+    setShowSuccess(true);
+    alert("✅ Profile updated successfully!");
+
+    setTimeout(() => setShowSuccess(false), 3000);
+  } catch (error) {
+    console.error("Failed to update profile:", error);
+    alert("❌ Failed to update profile. Please try again.");
   }
+};
+
 
   const handleCancel = () => {
     setEditData({ ...profileData })
@@ -43,16 +78,19 @@ const Profile = ({ currentLanguage }) => {
 
   const getInitials = (name) => {
     return name
-      .split(" ")
+      ?.split(" ")
       .map((n) => n[0])
       .join("")
       .toUpperCase()
   }
 
+  if (!profileData) {
+    return <div className="profile-page">Loading profile...</div>
+  }
+
   return (
     <div className="profile-page">
       <div className="profile-container">
-        {/* Success Message */}
         {showSuccess && (
           <div className="success-message">
             <span className="success-icon">✓</span>
@@ -60,15 +98,12 @@ const Profile = ({ currentLanguage }) => {
           </div>
         )}
 
-        {/* Header */}
         <div className="page-header">
           <h1>{t?.accountInfo || "Account Information"}</h1>
           <p className="page-subtitle">Manage your personal information and account settings</p>
         </div>
 
-        {/* Profile Card */}
         <div className="profile-card">
-          {/* Profile Header */}
           <div className="profile-header">
             <div className="profile-avatar">
               <span className="avatar-text">{getInitials(profileData.name)}</span>
@@ -80,7 +115,6 @@ const Profile = ({ currentLanguage }) => {
             </div>
           </div>
 
-          {/* Profile Form */}
           <div className="profile-form">
             <div className="form-header">
               <div className="form-title-section">
@@ -105,7 +139,13 @@ const Profile = ({ currentLanguage }) => {
                   {t?.name || "Full Name"}
                 </label>
                 {isEditing ? (
-                  <input type="text" name="name" value={editData.name} onChange={handleChange} className="form-input" />
+                  <input
+                    type="text"
+                    name="name"
+                    value={editData.name}
+                    onChange={handleChange}
+                    className="form-input"
+                  />
                 ) : (
                   <div className="form-value">{profileData.name}</div>
                 )}
@@ -130,7 +170,7 @@ const Profile = ({ currentLanguage }) => {
                 )}
               </div>
 
-              {/* Password Field */}
+              {/* Password Field (Masked) */}
               <div className="form-group">
                 <label className="form-label">
                   <span className="label-icon">🔒</span>
@@ -140,7 +180,7 @@ const Profile = ({ currentLanguage }) => {
                   <input
                     type="password"
                     name="password"
-                    value={editData.password}
+                    value={editData.password || "********"}
                     onChange={handleChange}
                     className="form-input"
                   />
@@ -169,7 +209,6 @@ const Profile = ({ currentLanguage }) => {
           </div>
         </div>
 
-        {/* Additional Info Card */}
         <div className="info-card">
           <div className="info-header">
             <h3>Account Status</h3>
@@ -181,9 +220,14 @@ const Profile = ({ currentLanguage }) => {
               <span className="info-badge premium-badge">Premium</span>
             </div>
             <div className="info-item member">
-              <span className="info-label">Member Since</span>
-              <span className="info-value">January 2024</span>
-            </div>
+  <span className="info-label">Member Since</span>
+  <span className="info-value">
+    {new Date(profileData.created_at).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+    })}
+  </span>
+</div>
           </div>
         </div>
       </div>
