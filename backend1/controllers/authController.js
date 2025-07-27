@@ -12,7 +12,7 @@ let blacklistedTokens = [];
 
 exports.register = async (req, res) => {
     
-    let { name, email, mobile, password, confirmPassword, role } = req.body;
+    let { name, email, mob: mobile, password, confirmPassword, role } = req.body;
 
     // Normalize role: trim, lowercase, replace spaces with underscores
     role = role?.trim().toLowerCase().replace(/\s+/g, '_');
@@ -57,6 +57,7 @@ exports.register = async (req, res) => {
         `;
         const userResult = await client.query(insertUserQuery, [name, email, mobile, hashedPassword, role]);
         const userId = userResult.rows[0].user_id;
+//console.log(req.body)
 
         // Role-based table insertion
         if (role === 'farmer') {

@@ -128,19 +128,27 @@ const Dashboard = ({ currentLanguage = "en", translatedText }) => {
       script.src = `https://apis.mapmyindia.com/advancedmaps/v1/${apiKey}/map_load?v=1.5`;
       script.async = true;
       script.onload = () => {
-        setTimeout(() => {
-          if (!window.mapInstance && document.getElementById("map")) {
-            window.mapInstance = new window.MapmyIndia.Map("map", {
-              center: [lat, lng],
-              zoom: 14,
-            });
-            window.L.marker([lat, lng])
-              .addTo(window.mapInstance)
-              .bindPopup("Your Farm Location")
-              .openPopup();
-          }
-        }, 100);
-      };
+  setTimeout(() => {
+    if (
+      window.MapmyIndia &&
+      window.MapmyIndia.Map &&
+      !window.mapInstance &&
+      document.getElementById("map")
+    ) {
+      window.mapInstance = new window.MapmyIndia.Map("map", {
+        center: [lat, lng],
+        zoom: 14,
+      });
+      window.L.marker([lat, lng])
+        .addTo(window.mapInstance)
+        .bindPopup("Your Farm Location")
+        .openPopup();
+    } else {
+      console.error("MapmyIndia SDK not loaded properly or map already initialized");
+    }
+  }, 100);
+};
+
       script.onerror = () => {
         console.error("Failed to load MapmyIndia script");
       };
