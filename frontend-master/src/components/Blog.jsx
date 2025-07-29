@@ -32,66 +32,81 @@ const Blog = () => {
   const [showShareModal, setShowShareModal] = useState(null)
 
   // Mock data with enhanced features
+  // useEffect(() => {
+  //   const mockBlogs = [
+  //     {
+  //       _id: "1",
+  //       title: "The Future of Smart Farming Technology",
+  //       content:
+  //         "Smart farming is revolutionizing agriculture with IoT sensors, AI-driven analytics, and automated systems. This comprehensive guide explores how technology is transforming traditional farming practices and creating more sustainable, efficient agricultural operations.",
+  //       author: "John Smith",
+  //       authorAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150",
+  //       likes: 42,
+  //       reactions: { like: 25, love: 12, wow: 5 },
+  //       comments: [
+  //         {
+  //           id: 1,
+  //           author: "Alice Johnson",
+  //           content: "Great insights on smart farming!",
+  //           time: "2h ago",
+  //           avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150",
+  //         },
+  //         {
+  //           id: 2,
+  //           author: "Bob Wilson",
+  //           content: "This is exactly what we need in modern agriculture.",
+  //           time: "4h ago",
+  //           avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+  //         },
+  //       ],
+  //       image: "https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=400",
+  //       featured: true,
+  //       createdAt: "2024-01-15",
+  //       readTime: "5 min read",
+  //       media: [],
+  //     },
+  //     {
+  //       _id: "2",
+  //       title: "Sustainable Agriculture Practices for Modern Farmers",
+  //       content:
+  //         "Discover the latest sustainable farming techniques that are helping farmers reduce environmental impact while maintaining productivity. From crop rotation to precision agriculture, learn how to implement eco-friendly practices on your farm.",
+  //       author: "Sarah Johnson",
+  //       authorAvatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
+  //       likes: 28,
+  //       reactions: { like: 18, love: 8, wow: 2 },
+  //       comments: [
+  //         {
+  //           id: 1,
+  //           author: "Mike Chen",
+  //           content: "Sustainability is the future!",
+  //           time: "1h ago",
+  //           avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
+  //         },
+  //       ],
+  //       image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400",
+  //       featured: false,
+  //       createdAt: "2024-01-14",
+  //       readTime: "7 min read",
+  //       media: [{ type: "video", url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4" }],
+  //     },
+  //   ]
+  //   setBlogs(mockBlogs)
+  // }, [])
+
   useEffect(() => {
-    const mockBlogs = [
-      {
-        _id: "1",
-        title: "The Future of Smart Farming Technology",
-        content:
-          "Smart farming is revolutionizing agriculture with IoT sensors, AI-driven analytics, and automated systems. This comprehensive guide explores how technology is transforming traditional farming practices and creating more sustainable, efficient agricultural operations.",
-        author: "John Smith",
-        authorAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150",
-        likes: 42,
-        reactions: { like: 25, love: 12, wow: 5 },
-        comments: [
-          {
-            id: 1,
-            author: "Alice Johnson",
-            content: "Great insights on smart farming!",
-            time: "2h ago",
-            avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150",
-          },
-          {
-            id: 2,
-            author: "Bob Wilson",
-            content: "This is exactly what we need in modern agriculture.",
-            time: "4h ago",
-            avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
-          },
-        ],
-        image: "https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=400",
-        featured: true,
-        createdAt: "2024-01-15",
-        readTime: "5 min read",
-        media: [],
-      },
-      {
-        _id: "2",
-        title: "Sustainable Agriculture Practices for Modern Farmers",
-        content:
-          "Discover the latest sustainable farming techniques that are helping farmers reduce environmental impact while maintaining productivity. From crop rotation to precision agriculture, learn how to implement eco-friendly practices on your farm.",
-        author: "Sarah Johnson",
-        authorAvatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150",
-        likes: 28,
-        reactions: { like: 18, love: 8, wow: 2 },
-        comments: [
-          {
-            id: 1,
-            author: "Mike Chen",
-            content: "Sustainability is the future!",
-            time: "1h ago",
-            avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
-          },
-        ],
-        image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400",
-        featured: false,
-        createdAt: "2024-01-14",
-        readTime: "7 min read",
-        media: [{ type: "video", url: "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4" }],
-      },
-    ]
-    setBlogs(mockBlogs)
-  }, [])
+  const fetchBlogs = async () => {
+    try {
+      const response = await fetch("/api/blogs/all"); // adjust URL if needed
+      const data = await response.json();
+      setBlogs(data);
+    } catch (error) {
+      console.error("Error fetching blogs:", error);
+    }
+  }
+
+  fetchBlogs();
+}, []);
+
 
   const handleTabClick = (tab) => {
     setActiveTab(tab)
@@ -104,63 +119,110 @@ const Blog = () => {
     setSelectedMedia([])
   }
 
-  const handleSave = () => {
+  // const handleSave = () => {
+  //   const newBlog = {
+  //     _id: Date.now().toString(),
+  //     title,
+  //     content,
+  //     author: "Current User",
+  //     authorAvatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
+  //     likes: 0,
+  //     reactions: { like: 0, love: 0, wow: 0 },
+  //     comments: [],
+  //     image:
+  //       selectedMedia.find((m) => m.type === "image")?.url ||
+  //       "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400",
+  //     featured: false,
+  //     createdAt: new Date().toISOString().split("T")[0],
+  //     readTime: "3 min read",
+  //     media: selectedMedia,
+  //   }
+
+  //   setBlogs([newBlog, ...blogs])
+  //   setIsEditing(false)
+  // }
+const handleSave = async () => {
+  try {
     const newBlog = {
-      _id: Date.now().toString(),
       title,
       content,
-      author: "Current User",
-      authorAvatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
-      likes: 0,
-      reactions: { like: 0, love: 0, wow: 0 },
-      comments: [],
-      image:
-        selectedMedia.find((m) => m.type === "image")?.url ||
-        "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=400",
-      featured: false,
-      createdAt: new Date().toISOString().split("T")[0],
-      readTime: "3 min read",
+      image: selectedMedia.find((m) => m.type === "image")?.url || "",
       media: selectedMedia,
+      featured: false, // you can make this dynamic if needed
     }
 
-    setBlogs([newBlog, ...blogs])
+    const response = await fetch("/api/blogs/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // "Authorization": `Bearer ${yourToken}` if auth is enabled
+      },
+      body: JSON.stringify(newBlog),
+    })
+
+    if (!response.ok) throw new Error("Failed to save blog")
+
+    const data = await response.json()
+    setBlogs([data.blog, ...blogs])
     setIsEditing(false)
+  } catch (error) {
+    console.error("Error saving blog:", error)
   }
+}
 
-  const handleReaction = (blogId, reactionType) => {
+
+
+  const handleReaction = async (blogId, reactionType) => {
+  try {
+    const response = await fetch(`/api/blogs/${blogId}/react`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        // "Authorization": `Bearer ${token}` if needed
+      },
+      body: JSON.stringify({ reactionType }),
+    });
+
+    if (!response.ok) throw new Error("Failed to react");
+
+    const data = await response.json();
+    // Update blog in local state
+    setBlogs(blogs.map(blog => blog._id === blogId ? data.blog : blog));
+  } catch (error) {
+    console.error("Error reacting to blog:", error);
+  }
+};
+
+
+  const handleComment = async (blogId) => {
+  const commentText = newComment[blogId]?.trim();
+  if (!commentText) return;
+
+  try {
+    const response = await fetch(`/api/blogs/${blogId}/comment`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // "Authorization": `Bearer ${token}`, // Add if protected
+      },
+      body: JSON.stringify({ content: commentText }),
+    });
+
+    if (!response.ok) throw new Error("Failed to add comment");
+
+    const data = await response.json();
+
+    // Update comments in local state
     setBlogs(
-      blogs.map((blog) => {
-        if (blog._id === blogId) {
-          const newReactions = { ...blog.reactions }
-          newReactions[reactionType] = (newReactions[reactionType] || 0) + 1
-          return { ...blog, reactions: newReactions, likes: blog.likes + 1 }
-        }
-        return blog
-      }),
-    )
+      blogs.map((blog) => (blog._id === blogId ? data.blog : blog))
+    );
+
+    setNewComment({ ...newComment, [blogId]: "" });
+  } catch (error) {
+    console.error("Error posting comment:", error);
   }
+};
 
-  const handleComment = (blogId) => {
-    if (!newComment[blogId]?.trim()) return
-
-    setBlogs(
-      blogs.map((blog) => {
-        if (blog._id === blogId) {
-          const comment = {
-            id: Date.now(),
-            author: "Current User",
-            content: newComment[blogId],
-            time: "now",
-            avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150",
-          }
-          return { ...blog, comments: [...blog.comments, comment] }
-        }
-        return blog
-      }),
-    )
-
-    setNewComment({ ...newComment, [blogId]: "" })
-  }
 
   const handleMediaUpload = (type) => {
     // Simulate file upload

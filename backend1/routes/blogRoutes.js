@@ -13,11 +13,21 @@ const adminOnly = (req, res, next) => {
 };
 
 // Create Blog (Admin only)
-router.post('/create', authMiddleware, adminOnly, async (req, res) => {
+// Create Blog (Authenticated Users)
+router.post('/create', authMiddleware, async (req, res) => {
     try {
-        const { title, content } = req.body;
+        const { title, content, image, media, featured } = req.body;
 
-        const newBlog = new Blog({ title, content });
+        const newBlog = new Blog({
+            title,
+            content,
+            author: req.user.name || 'Anonymous', // Pull author name from token/session
+            authorAvatar: req.user.avatar || '',  // Optional avatar if stored
+            image,
+            media,
+            featured: !!featured,
+        });
+
         await newBlog.save();
 
         res.status(201).json({ message: 'Blog created successfully', blog: newBlog });
@@ -26,10 +36,29 @@ router.post('/create', authMiddleware, adminOnly, async (req, res) => {
     }
 });
 
+
 // Get All Blogs (Public)
+// Get All Blogs with optional search and filtering
 router.get('/all', async (req, res) => {
     try {
-        const blogs = await Blog.find().sort({ createdAt: -1 });
+        const { search, featured } = req.query;
+
+        const query = {};
+
+        if (search) {
+            const searchRegex = new RegExp(search, 'i'); // case-insensitive
+            query.$or = [
+                { title: searchRegex },
+                { content: searchRegex },
+                { author: searchRegex }
+            ];
+        }
+
+        if (featured === 'true') {
+            query.featured = true;
+        }
+
+        const blogs = await Blog.find(query).sort({ createdAt: -1 });
         res.status(200).json(blogs);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching blogs', error: error.message });
@@ -73,6 +102,59 @@ router.put('/:id', authMiddleware, adminOnly, async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Error updating blog', error: error.message });
     }
+});
+
+
+// Add Reaction to Blog (any user)
+router.put('/:id/react', authMiddleware, async (req, res) => {
+  try {
+    const { reactionType } = req.body;
+    const blogId = req.params.id;
+
+    const blog = await Blog.findById(blogId);
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+
+    // Increment reaction count
+    blog.reactions = blog.reactions || {};
+    blog.reactions[reactionType] = (blog.reactions[reactionType] || 0) + 1;
+    blog.likes = (blog.likes || 0) + 1;
+
+    await blog.save();
+
+    res.status(200).json({ message: 'Reaction added', blog });
+  } catch (error) {
+    res.status(500).json({ message: 'Error reacting to blog', error: error.message });
+  }
+});
+
+
+// Add Comment to Blog
+router.post('/:id/comment', authMiddleware, async (req, res) => {
+  try {
+    const blogId = req.params.id;
+    const { content } = req.body;
+
+    const comment = {
+      author: req.user.name || 'Anonymous',
+      content,
+      time: new Date().toLocaleString(),
+      avatar: req.user.avatar || '',
+    };
+
+    const blog = await Blog.findById(blogId);
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+
+    blog.comments.push(comment);
+    await blog.save();
+
+    res.status(200).json({ message: 'Comment added', blog });
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding comment', error: error.message });
+  }
 });
 
 

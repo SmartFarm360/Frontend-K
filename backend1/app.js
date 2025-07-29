@@ -10,6 +10,7 @@ const farmerRoutes = require('./routes/farmerRoutes');
 dotenv.config();
 connectDB();
 
+const helpRoutes = require("./routes/helpRoutes");
 const blogRoutes = require('./routes/blogRoutes');
 const app = express();
 
@@ -25,6 +26,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/blogs', blogRoutes);
+app.use("/api/help", helpRoutes);
 app.use('/api', require('./routes/sensorRoutes'));
 app.use('/api/ml', require('./routes/mlRoutes'));
 app.use('/api/images', require('./routes/imageRoutes'));

@@ -89,19 +89,32 @@ const Help = () => {
     setHoverRating(0)
   }
 
-  const handleFeedbackSubmit = (e) => {
-    e.preventDefault()
-    if (rating > 0 && feedback.trim()) {
-      // Here you would typically send the feedback to your backend
-      console.log("Feedback submitted:", { rating, feedback })
-      setIsSubmitted(true)
+  const handleFeedbackSubmit = async (e) => {
+  e.preventDefault();
+  if (rating > 0 && feedback.trim()) {
+    try {
+      const response = await fetch("/api/help/feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rating, feedback }),
+      });
+
+      if (!response.ok) throw new Error("Failed to submit");
+
+      setIsSubmitted(true);
       setTimeout(() => {
-        setIsSubmitted(false)
-        setRating(0)
-        setFeedback("")
-      }, 3000)
+        setIsSubmitted(false);
+        setRating(0);
+        setFeedback("");
+      }, 3000);
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
     }
   }
+};
+
 
   return (
     <div className="help-container">
