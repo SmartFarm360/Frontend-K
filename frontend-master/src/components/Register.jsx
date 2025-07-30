@@ -201,7 +201,7 @@ const Register = ({ currentLanguage, onRegister }) => {
             <div className="form-group file-group">
               <label className="form-label">
                 <span className="label-icon">📄</span>
-                Land Document (PDF or Image)
+                Land Document (PDF)
               </label>
               <input
                 type="file"
@@ -282,18 +282,18 @@ const Register = ({ currentLanguage, onRegister }) => {
           </div>
         )
 
-      case "admin":
-        return (
-          <div className="role-section">
-            <div className="role-header">
-              <div className="role-icon admin-icon">🛡</div>
-              <h3 className="role-title">Admin Access</h3>
-            </div>
-            <div className="admin-note">
-              <p>Admin privileges will be granted after verification.</p>
-            </div>
-          </div>
-        )
+      // case "admin":
+      //   return (
+      //     <div className="role-section">
+      //       <div className="role-header">
+      //         <div className="role-icon admin-icon">🛡</div>
+      //         <h3 className="role-title">Admin Access</h3>
+      //       </div>
+      //       <div className="admin-note">
+      //         <p>Admin privileges will be granted after verification.</p>
+      //       </div>
+      //     </div>
+      //   )
 
       default:
         return null
@@ -427,7 +427,7 @@ const Register = ({ currentLanguage, onRegister }) => {
               <select name="role" value={formData.role} onChange={handleChange} className="form-select" required>
                 <option value="">-- Select Role --</option>
                 <option value="farmer">🌱 {t.farmer || "Farmer"}</option>
-                <option value="admin">🛡 {t.admin || "Admin"}</option>
+                {/* <option value="admin">🛡 {t.admin || "Admin"}</option> */}
                 <option value="drone_controller">🚁 {t.droneController || "Drone Controller"}</option>
               </select>
             </div>

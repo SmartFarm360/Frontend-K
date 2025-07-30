@@ -110,24 +110,38 @@ router.put('/:id/react', authMiddleware, async (req, res) => {
   try {
     const { reactionType } = req.body;
     const blogId = req.params.id;
+    const userId = req.user.user_id;
 
     const blog = await Blog.findById(blogId);
-    if (!blog) {
-      return res.status(404).json({ message: 'Blog not found' });
+    if (!blog) return res.status(404).json({ message: 'Blog not found' });
+
+    blog.reactions = blog.reactions || {};
+    blog.reactionUsers = blog.reactionUsers || {
+      like: [],
+      love: [],
+      wow: [],
+    };
+
+    const userReacted = blog.reactionUsers[reactionType]?.includes(userId);
+
+    if (userReacted) {
+      // User already reacted, so unlike
+      blog.reactions[reactionType] = Math.max((blog.reactions[reactionType] || 1) - 1, 0);
+      blog.reactionUsers[reactionType] = blog.reactionUsers[reactionType].filter((id) => id !== userId);
+    } else {
+      // User adds reaction
+      blog.reactions[reactionType] = (blog.reactions[reactionType] || 0) + 1;
+      blog.reactionUsers[reactionType].push(userId);
     }
 
-    // Increment reaction count
-    blog.reactions = blog.reactions || {};
-    blog.reactions[reactionType] = (blog.reactions[reactionType] || 0) + 1;
-    blog.likes = (blog.likes || 0) + 1;
-
     await blog.save();
+    res.status(200).json({ message: 'Reaction updated', blog });
 
-    res.status(200).json({ message: 'Reaction added', blog });
   } catch (error) {
     res.status(500).json({ message: 'Error reacting to blog', error: error.message });
   }
 });
+
 
 
 // Add Comment to Blog

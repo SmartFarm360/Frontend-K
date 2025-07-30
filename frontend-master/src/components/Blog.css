@@ -5,7 +5,7 @@
   font-family: "Segoe UI", sans-serif;
   background-color: #f8fffe;
   min-height: 100vh;
-  padding-top: 55rem;
+  padding-top: 85rem;
 }
 
 /* Top Navigation */
@@ -567,6 +567,7 @@
   font-family: "Georgia", serif;
   background-color: #fff;
   min-height: 100vh;
+  padding-top: 35rem;
 }
 
 .editor-nav {

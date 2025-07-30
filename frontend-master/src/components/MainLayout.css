@@ -43,6 +43,7 @@
   font-family: 'Segoe UI', sans-serif;
   text-shadow: 1px 1px 1px #d8f5d1;
   letter-spacing: 0.5px;
+  display:flex;
 }
 
 .nav-right {

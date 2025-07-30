@@ -1,7 +1,7 @@
 import { translations } from "../utils/translations"
 import "./About.css"
 import Farmer_Image from "/src/assets/Farmer_image.jpg" // adjust path as needed
-import logo from "/src/assets/logo.png" // adjust path as needed
+import logo from "/src/assets/smartFarm_logo.png" // adjust path as needed
 
 const About = ({ currentLanguage }) => {
   const t = translations?.[currentLanguage] ?? translations["en"]

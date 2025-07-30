@@ -98,6 +98,7 @@ function AppRoutes() {
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("userRole");
     localStorage.removeItem("token");
+    navigate("/");
   };
 
   return (
@@ -204,9 +205,7 @@ function AppRoutes() {
                 <Dashboard currentLanguage={currentLanguage} />
               </MainLayout>
             ) : (
-              <div style={{ padding: "2rem", color: "red" }}>
-                Not authorized for Farmer Dashboard. Your role: {userRole}
-              </div>
+              <Navigate to="/login" />
             )
           }
         />
@@ -257,14 +256,18 @@ function AppRoutes() {
         <Route
           path="/history"
           element={
-            <MainLayout
-              isAuthenticated={isAuthenticated}
-              onLogout={handleLogout}
-              currentLanguage={currentLanguage}
-              setCurrentLanguage={setCurrentLanguage}
-            >
-              <History currentLanguage={currentLanguage} />
-            </MainLayout>
+            isAuthenticated && userRole === "farmer" ? (
+              <MainLayout
+                isAuthenticated={isAuthenticated}
+                onLogout={handleLogout}
+                currentLanguage={currentLanguage}
+                setCurrentLanguage={setCurrentLanguage}
+              >
+                <Dashboard currentLanguage={currentLanguage} />
+              </MainLayout>
+            ) : (
+              <Navigate to="/login" />
+            )
           }
         />
 

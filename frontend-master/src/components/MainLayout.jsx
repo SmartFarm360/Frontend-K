@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import "./MainLayout.css";
+import smartFarm_logo from "/src/assets/smartFarm_logo.png"
 
 const baseText = {
   home: "Home",
@@ -95,8 +96,11 @@ const MainLayout = ({
     <div className="main-layout">
       <nav className="navbar">
         <div className="nav-left">
-          <div className="logo">🌱</div>
-          <span className="product-name">Smart Farm 360</span>
+
+          <span className="product-name">
+            <img src={smartFarm_logo} alt="" className="logo" /><h3 id="smart_name">Smart Farm 360</h3>
+
+          </span>
         </div>
 
         <div className="nav-right">

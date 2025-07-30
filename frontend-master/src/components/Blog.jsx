@@ -94,18 +94,20 @@ const Blog = () => {
   // }, [])
 
   useEffect(() => {
-  const fetchBlogs = async () => {
-    try {
-      const response = await fetch("/api/blogs/all"); // adjust URL if needed
-      const data = await response.json();
-      setBlogs(data);
-    } catch (error) {
-      console.error("Error fetching blogs:", error);
-    }
-  }
+    const fetchBlogs = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/blogs/all");
+        const data = await response.json(); // ✅ must come BEFORE you use it
+        console.log("✅ Blogs fetched:", data);
+        setBlogs(data); // ✅ this uses `data`
+      } catch (error) {
+        console.error("❌ Error fetching blogs:", error);
+      }
+    };
 
-  fetchBlogs();
-}, []);
+    fetchBlogs();
+  }, []);
+
 
 
   const handleTabClick = (tab) => {
@@ -141,87 +143,98 @@ const Blog = () => {
   //   setBlogs([newBlog, ...blogs])
   //   setIsEditing(false)
   // }
-const handleSave = async () => {
-  try {
-    const newBlog = {
-      title,
-      content,
-      image: selectedMedia.find((m) => m.type === "image")?.url || "",
-      media: selectedMedia,
-      featured: false, // you can make this dynamic if needed
+  const handleSave = async () => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const newBlog = {
+        title,
+        content,
+        image: selectedMedia.find((m) => m.type === "image")?.url || "",
+        media: selectedMedia,
+        featured: false,
+      };
+
+      const response = await fetch("/api/blogs/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(newBlog),
+      });
+
+      const responseText = await response.text();
+
+     
+      if (!response.ok) {
+        console.error("❌ Server responded with error:", responseText);
+        throw new Error("Failed to save blog");
+      }
+
+      const data = JSON.parse(responseText); // ⬅️ manual parse
+      
+      setBlogs([data.blog, ...blogs]);
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error saving blog:", error);
     }
+  };
 
-    const response = await fetch("/api/blogs/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        // "Authorization": `Bearer ${yourToken}` if auth is enabled
-      },
-      body: JSON.stringify(newBlog),
-    })
 
-    if (!response.ok) throw new Error("Failed to save blog")
-
-    const data = await response.json()
-    setBlogs([data.blog, ...blogs])
-    setIsEditing(false)
-  } catch (error) {
-    console.error("Error saving blog:", error)
-  }
-}
 
 
 
   const handleReaction = async (blogId, reactionType) => {
-  try {
-    const response = await fetch(`/api/blogs/${blogId}/react`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        // "Authorization": `Bearer ${token}` if needed
-      },
-      body: JSON.stringify({ reactionType }),
-    });
+    const token = localStorage.getItem("token");
 
-    if (!response.ok) throw new Error("Failed to react");
+    try {
+      const response = await fetch(`http://localhost:5000/api/blogs/${blogId}/react`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ reactionType }),
+      });
 
-    const data = await response.json();
-    // Update blog in local state
-    setBlogs(blogs.map(blog => blog._id === blogId ? data.blog : blog));
-  } catch (error) {
-    console.error("Error reacting to blog:", error);
-  }
-};
+      if (!response.ok) throw new Error("Failed to react");
+
+      const data = await response.json();
+      setBlogs(blogs.map(blog => blog._id === blogId ? data.blog : blog));
+    } catch (error) {
+      console.error("Error reacting to blog:", error);
+    }
+  };
+
 
 
   const handleComment = async (blogId) => {
-  const commentText = newComment[blogId]?.trim();
-  if (!commentText) return;
+    const token = localStorage.getItem("token");
+    const commentText = newComment[blogId]?.trim();
+    if (!commentText) return;
 
-  try {
-    const response = await fetch(`/api/blogs/${blogId}/comment`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        // "Authorization": `Bearer ${token}`, // Add if protected
-      },
-      body: JSON.stringify({ content: commentText }),
-    });
+    try {
+      const response = await fetch(`http://localhost:5000/api/blogs/${blogId}/comment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ content: commentText }),
+      });
 
-    if (!response.ok) throw new Error("Failed to add comment");
+      if (!response.ok) throw new Error("Failed to add comment");
 
-    const data = await response.json();
+      const data = await response.json();
 
-    // Update comments in local state
-    setBlogs(
-      blogs.map((blog) => (blog._id === blogId ? data.blog : blog))
-    );
+      setBlogs(blogs.map((blog) => (blog._id === blogId ? data.blog : blog)));
+      setNewComment({ ...newComment, [blogId]: "" });
+    } catch (error) {
+      console.error("Error posting comment:", error);
+    }
+  };
 
-    setNewComment({ ...newComment, [blogId]: "" });
-  } catch (error) {
-    console.error("Error posting comment:", error);
-  }
-};
 
 
   const handleMediaUpload = (type) => {
@@ -430,22 +443,22 @@ const handleSave = async () => {
                 <div className="reactions-left">
                   <button className="reaction-btn" onClick={() => handleReaction(blog._id, "like")}>
                     <FiHeart className="reaction-icon" />
-                    <span>{blog.reactions.like || 0}</span>
+                    <span>{blog.reactions?.like || 0}</span>
                   </button>
                   <button className="reaction-btn" onClick={() => handleReaction(blog._id, "love")}>
                     <FiThumbsUp className="reaction-icon" />
-                    <span>{blog.reactions.love || 0}</span>
+                    <span>{blog.reactions?.love || 0}</span>
                   </button>
                   <button className="reaction-btn" onClick={() => handleReaction(blog._id, "wow")}>
                     <FiSmile className="reaction-icon" />
-                    <span>{blog.reactions.wow || 0}</span>
+                    <span>{blog.reactions?.wow || 0}</span>
                   </button>
                   <button
                     className="reaction-btn"
                     onClick={() => setShowComments({ ...showComments, [blog._id]: !showComments[blog._id] })}
                   >
                     <FiMessageCircle className="reaction-icon" />
-                    <span>{blog.comments.length}</span>
+                    <span>{blog.comments?.length}</span>
                   </button>
                 </div>
               </div>
