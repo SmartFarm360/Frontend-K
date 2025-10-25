@@ -263,7 +263,7 @@ function AppRoutes() {
                 currentLanguage={currentLanguage}
                 setCurrentLanguage={setCurrentLanguage}
               >
-                <Dashboard currentLanguage={currentLanguage} />
+                <History currentLanguage={currentLanguage} />
               </MainLayout>
             ) : (
               <Navigate to="/login" />
